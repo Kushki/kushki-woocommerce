@@ -52,7 +52,8 @@ KushkiCheckout = function () {
 
     Kushki.prototype.loadIframe = function () {
         var e, t, i, r;
-        i = this.url + ("?merchant_id=" + this.params.merchant_id) + ("&amount=" + this.params.amount) + ("&language=" + this.params.language), e = {
+        i = this.url + ("?merchant_id=" + this.params.merchant_id) + ("&is_subscription=" + this.params.is_subscription)  + ("&amount=" + this.params.amount) + ("&language=" + this.params.language);
+        e = {
             src: i,
             width: "100%",
             style: "display:block",

@@ -191,8 +191,9 @@ class Kushki_Gateway extends WC_Payment_Gateway_CC {
             var kushki = new KushkiCheckout({
                 "form": "kushki-form",
                 "merchant_id": '<?php echo $this->public_id ?>',
-                "amount": '<?php echo number_format($woocommerce->cart->total,2) ?>'
-            });
+                "amount": '<?php echo number_format($woocommerce->cart->total,2) ?>',
+                "is_subscription": false
+            }<?php echo ( !$this->environment == "yes" )? ", \"https://p1.kushkipagos.com/kushki/kushki/index.html\"":""; ?>);
             jQuery('#place_order').hide();
         </script>
 		<?php
