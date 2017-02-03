@@ -119,7 +119,7 @@ class Kushki_Gateway extends WC_Payment_Gateway_CC {
 		$merchantId  = $this->private_id;
 		$language    = KushkiLanguage::ES;
 		$currency    = KushkiCurrency::USD;
-		$environment = ( $this->environment == "yes" ) ? KushkiEnvironment::PRODUCTION : KushkiEnvironment::TESTING;
+		$environment = ( $this->environment == "yes" ) ? KushkiEnvironment::TESTING : KushkiEnvironment::PRODUCTION ;
 
 		$kushki = new Kushki( $merchantId, $language, $currency, $environment );
 
@@ -193,7 +193,7 @@ class Kushki_Gateway extends WC_Payment_Gateway_CC {
                 "merchant_id": '<?php echo $this->public_id ?>',
                 "amount": '<?php echo number_format($woocommerce->cart->total,2) ?>',
                 "is_subscription": false
-            }<?php echo ( !$this->environment == "yes" )? ", \"https://p1.kushkipagos.com/kushki/kushki/index.html\"":""; ?>);
+            }<?php echo ( $this->environment == "yes" )? "": ", \"https://p1.kushkipagos.com/kushki/kushki/index.html\""; ?>);    
             jQuery('#place_order').hide();
         </script>
 		<?php
