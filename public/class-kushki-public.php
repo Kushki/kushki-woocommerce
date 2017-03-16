@@ -96,6 +96,7 @@ class Kushki_Public {
 		 * class.
 		 */
 
+        wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/jquery.showandtell.js', array( 'jquery' ), $this->version, false );
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/kushki-public.js', array( 'jquery' ), $this->version, false );
 
 	}
