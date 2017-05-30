@@ -126,7 +126,7 @@ class Kushki_Gateway extends WC_Payment_Gateway_CC {
 		$token        = $_POST['kushkiToken'];
 		$months       = intval( $_POST['kushkiDeferred'] );
 		$total        = $customer_order->order_total;
-		$subtotalIva  = round($total / 1.14,2);
+		$subtotalIva  = round($total / 1.12,2);
 		$iva          = $total - $subtotalIva;
 		$subtotalIva0 = 0;
 		$ice          = 0;
