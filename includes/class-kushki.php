@@ -117,7 +117,7 @@ class Kushki_WC {
 		 */
 		require_once dirname( dirname( __FILE__ ) ) . '/public/class-kushki-public.php';
 
-		require_once dirname( dirname( __FILE__ ) ) . '/kushki/autoload.php';
+		require_once dirname( dirname( __FILE__ ) ) . '/vendor/autoload.php';
 
 
 		$this->loader = new Kushki_Loader();

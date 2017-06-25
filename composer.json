@@ -1,0 +1,16 @@
+{
+    "name": "kushki/kushki-woocommerce",
+    "description": "Woocommerce plugin for Kushki",
+    "type": "library",
+    "require": {
+        "kushki/kushki-php": "^1.2"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "joseSantacruz",
+            "email": "jose@kushkipagos.com"
+        }
+    ],
+    "minimum-stability": "stable"
+}

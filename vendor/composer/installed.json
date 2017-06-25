@@ -1,0 +1,91 @@
+[
+    {
+        "name": "nategood/httpful",
+        "version": "0.2.20",
+        "version_normalized": "0.2.20.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/nategood/httpful.git",
+            "reference": "c1cd4d46a4b281229032cf39d4dd852f9887c0f6"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/nategood/httpful/zipball/c1cd4d46a4b281229032cf39d4dd852f9887c0f6",
+            "reference": "c1cd4d46a4b281229032cf39d4dd852f9887c0f6",
+            "shasum": ""
+        },
+        "require": {
+            "ext-curl": "*",
+            "php": ">=5.3"
+        },
+        "require-dev": {
+            "phpunit/phpunit": "*"
+        },
+        "time": "2015-10-26T16:11:30+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-0": {
+                "Httpful": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Nate Good",
+                "email": "me@nategood.com",
+                "homepage": "http://nategood.com"
+            }
+        ],
+        "description": "A Readable, Chainable, REST friendly, PHP HTTP Client",
+        "homepage": "http://github.com/nategood/httpful",
+        "keywords": [
+            "api",
+            "curl",
+            "http",
+            "requests",
+            "rest",
+            "restful"
+        ]
+    },
+    {
+        "name": "kushki/kushki-php",
+        "version": "1.2.3",
+        "version_normalized": "1.2.3.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/Kushki/kushki-php.git",
+            "reference": "d15ddc497f7bd749b480b1d7fb70ec5f02e604c1"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/Kushki/kushki-php/zipball/d15ddc497f7bd749b480b1d7fb70ec5f02e604c1",
+            "reference": "d15ddc497f7bd749b480b1d7fb70ec5f02e604c1",
+            "shasum": ""
+        },
+        "require": {
+            "nategood/httpful": "^0.2.20"
+        },
+        "require-dev": {
+            "phpunit/php-code-coverage": "^3.3.3",
+            "phpunit/phpunit": "5.3.*"
+        },
+        "time": "2017-05-03T04:04:11+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "kushki\\lib\\": "lib/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "description": "Librería PHP para integrarse con KushkiPagos",
+        "homepage": "https://github.com/Kushki/kushki-php"
+    }
+]
