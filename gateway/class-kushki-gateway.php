@@ -281,9 +281,11 @@ class Kushki_Gateway extends WC_Payment_Gateway_CC
         $dataOrder['coupon_lines'] = $couponLines;
 
         if ($months > 0) {
-            $transaction = $kushki->deferredCharge($token, $amount, $months, $dataOrder);
+            // $transaction = $kushki->deferredCharge($token, $amount, $months, $dataOrder);
+            $transaction = $kushki->deferredCharge($token, $amount, $months);
         } else {
-            $transaction = $kushki->charge($token, $amount, $dataOrder);
+            // $transaction = $kushki->charge($token, $amount, $dataOrder);
+            $transaction = $kushki->charge($token, $amount);
         }
 
         if ($transaction->isSuccessful()) {
