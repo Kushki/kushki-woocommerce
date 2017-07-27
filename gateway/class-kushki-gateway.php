@@ -347,8 +347,17 @@ class Kushki_Gateway extends WC_Payment_Gateway_CC
                 "amount": '<?php echo number_format($woocommerce->cart->total, 2) ?>',
                 "currency": '<?php echo get_woocommerce_currency() ?>',
                 "is_subscription": false
-            }<?php echo ($this->environment == "yes") ? "" : ", \"https://cdn.kushkipagos.com/kushki/kushki/index.html\""; ?>);
-            jQuery('#place_order').hide();
+            }<?php echo ($this->environment == "yes") ? "" : ", \"https://cdn.kushkipagos.com/index.html\""; ?>);
+            if(jQuery('#kushki-form').closest(".payment_box.payment_method_kushki").css('display') == 'block'){
+                jQuery('#place_order').hide();
+            }
+            jQuery('#kushki-form').closest(".payment_box.payment_method_kushki").bind("show", function() {
+                jQuery('#place_order').hide();
+            });
+
+            jQuery('#kushki-form').closest(".payment_box.payment_method_kushki").bind("hide", function() {
+                jQuery('#place_order').show();
+            });
         </script>
         <?php
     }
