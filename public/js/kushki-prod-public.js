@@ -10,7 +10,7 @@ KushkiCheckout = function () {
     function t(t, e) {
         this.params = null != t ? t : {};
         this.onReceiveMessage = bind(this.onReceiveMessage, this);
-        this.url = e || "https://p1.kushkipagos.com/kushki/kushki/index.html";
+        this.url = e || "https://cdn.kushkipagos.com/index.html";
         this.id = +new Date;
         this.iframeHeightOffset = 10;
         this.form = document.getElementById(this.params.form);

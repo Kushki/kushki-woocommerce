@@ -40,7 +40,7 @@ KushkiCheckout = function () {
     function Kushki(e, t) {
         this.params = null != e ? e : {};
         this.onReceiveMessage = bind(this.onReceiveMessage, this);
-        this.url = t || "https://uat.aurusinc.com/kushki/kushki/index.html";
+        this.url = t || "https://cdn-uat.kushkipagos.com/index.html";
         this.id = +new Date;
         this.iframeHeightOffset = 10;
         this.element = document.getElementById(this.params.form);
