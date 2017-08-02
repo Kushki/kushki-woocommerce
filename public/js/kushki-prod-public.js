@@ -34,7 +34,7 @@ KushkiCheckout = function () {
         }
     }, t.prototype._loadIframe = function () {
         var t, e, i, s;
-        i = this.url + "?merchant_id=" + this.params.merchant_id + ("&is_subscription=" + this.params.is_subscription) + ("&amount=" + this.params.amount) + ("&language=" + this.params.language);
+        i = this.url + "?merchant_id=" + this.params.merchant_id + ("&is_subscription=" + this.params.is_subscription) + ("&amount=" + this.params.amount) + ("&language=" + this.params.language) + ("&currency=" + this.params.currency);
         t = {
             src: i,
             width: "100%",
