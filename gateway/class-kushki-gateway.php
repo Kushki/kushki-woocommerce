@@ -200,6 +200,9 @@ class Kushki_Gateway extends WC_Payment_Gateway_CC
 
         foreach ($dataOrder['tax_lines'] as $tax) {
             $totalTax = floatval($tax->get_tax_total());
+            if($tax->get_shipping_tax_total()) {
+                $totalTax += floatval($tax->get_shipping_tax_total());
+            }
             switch ($tax->get_label()) {
                 case $this->tax_iva:
                     $ivaPercent = intval(str_replace('%', '', WC_Tax::get_rate_percent($tax->get_rate_id()))) / 100;
@@ -237,7 +240,7 @@ class Kushki_Gateway extends WC_Payment_Gateway_CC
 
 
         $subtotalIva = round($iva / $ivaPercent, $decimals);
-        $subtotalIva0 = $subtotal - $subtotalIva;
+        $subtotalIva0 = round($subtotal - $subtotalIva, $decimals);
 
         $iva = round($iva, $decimals);
 
