@@ -181,6 +181,7 @@ class Kushki_Gateway extends WC_Payment_Gateway_CC
         $merchantId = $this->private_id;
         $language = KushkiLanguage::ES;
         $currency = $customer_order->get_currency();
+        $decimals = wc_get_price_decimals();
         $environment = ($this->environment == "yes") ? KushkiEnvironment::TESTING : KushkiEnvironment::PRODUCTION;
         $dataOrder = $customer_order->get_data();
 
@@ -188,7 +189,7 @@ class Kushki_Gateway extends WC_Payment_Gateway_CC
 
         $token = $_POST['kushkiToken'];
         $months = intval($_POST['kushkiDeferred']);
-        $subtotal = $customer_order->get_total() - $customer_order->get_total_tax();
+        $subtotal = round($customer_order->get_total() - $customer_order->get_total_tax(), $decimals);
         $iva = 0;
         $ice = 0;
         $propina = null;
@@ -234,18 +235,21 @@ class Kushki_Gateway extends WC_Payment_Gateway_CC
             }
         }
 
-        $subtotalIva = round($iva / $ivaPercent, 2);
+
+        $subtotalIva = round($iva / $ivaPercent, $decimals);
         $subtotalIva0 = $subtotal - $subtotalIva;
+
+        $iva = round($iva, $decimals);
 
         $auxTax = $ice;
         if (!is_null($propina)
             || !is_null($tasaAeroportuaria)
             || !is_null($agenciaDeViaje)
             || !is_null($iac)) {
-            $auxTax = new ExtraTaxes((!is_null($propina) ? $propina : 0),
-                (!is_null($tasaAeroportuaria) ? $tasaAeroportuaria : 0),
-                (!is_null($agenciaDeViaje) ? $agenciaDeViaje : 0),
-                (!is_null($iac) ? $iac : 0));
+            $auxTax = new ExtraTaxes((!is_null($propina) ? round($propina, $decimals) : 0),
+                (!is_null($tasaAeroportuaria) ? round($tasaAeroportuaria, $decimals) : 0),
+                (!is_null($agenciaDeViaje) ? round($agenciaDeViaje, $decimals) : 0),
+                (!is_null($iac) ? round($iac, $decimals) : 0));
         }
 
         $amount = new Amount($subtotalIva, $iva, $subtotalIva0, $auxTax);
@@ -281,11 +285,11 @@ class Kushki_Gateway extends WC_Payment_Gateway_CC
         $dataOrder['coupon_lines'] = $couponLines;
 
         if ($months > 0) {
-            // $transaction = $kushki->deferredCharge($token, $amount, $months, $dataOrder);
-            $transaction = $kushki->deferredCharge($token, $amount, $months);
+            $transaction = $kushki->deferredCharge($token, $amount, $months, $dataOrder);
+            // $transaction = $kushki->deferredCharge($token, $amount, $months);
         } else {
-            // $transaction = $kushki->charge($token, $amount, $dataOrder);
-            $transaction = $kushki->charge($token, $amount);
+            $transaction = $kushki->charge($token, $amount, $dataOrder);
+            // $transaction = $kushki->charge($token, $amount);
         }
 
         if ($transaction->isSuccessful()) {

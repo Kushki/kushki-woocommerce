@@ -1,11 +1,11 @@
 FROM wordpress:latest
 
-ENV WOOCOMMERCE_VERSION 3.0.9
-ENV WOOCOMMERCE_UPSTREAM_VERSION 3.0.9
+ENV WOOCOMMERCE_VERSION 3.1.2
+ENV WOOCOMMERCE_UPSTREAM_VERSION 3.1.2
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends unzip wget \
-    && wget https://downloads.wordpress.org/plugin/woocommerce.3.0.9.zip -O /tmp/temp.zip \
+    && wget https://downloads.wordpress.org/plugin/woocommerce.3.1.2.zip -O /tmp/temp.zip \
     && cd /usr/src/wordpress/wp-content/plugins \
     && unzip /tmp/temp.zip \
     && rm /tmp/temp.zip \
