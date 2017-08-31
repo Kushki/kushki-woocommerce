@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Plugin Name:       Kushki - WooCommerce Payment Gateway
+ * Plugin Name:       Kushki - WooCommerce Payment Gateway.
  * Plugin URI:        https://www.kushkipagos.com/
  * Description:       Kushki payment gateway for WooCommerce.
  * Version:           2.1.0
