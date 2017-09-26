@@ -238,8 +238,10 @@ class Kushki_Gateway extends WC_Payment_Gateway_CC
             }
         }
 
-
-        $subtotalIva = round($iva / $ivaPercent, $decimals);
+        $subtotalIva = 0;
+        if($ivaPercent > 0){
+            $subtotalIva = round($iva / $ivaPercent, $decimals);
+        }
         $subtotalIva0 = round($subtotal - $subtotalIva, $decimals);
 
         $iva = round($iva, $decimals);
