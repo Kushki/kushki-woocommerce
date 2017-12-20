@@ -259,12 +259,6 @@ class Kushki_Gateway extends WC_Payment_Gateway_CC
 
         $amount = new Amount($subtotalIva, $iva, $subtotalIva0, $auxTax);
 
-        $lineItems = [];
-        foreach ($dataOrder['line_items'] as $item){
-            array_push($lineItems,$item->get_data());
-        }
-        $dataOrder['line_items'] = $lineItems;
-
         $taxLines = [];
         foreach ($dataOrder['tax_lines'] as $item){
             array_push($taxLines,$item->get_data());
@@ -283,11 +277,10 @@ class Kushki_Gateway extends WC_Payment_Gateway_CC
         }
         $dataOrder['fee_lines'] = $feeLines;
 
-        $couponLines = [];
-        foreach ($dataOrder['coupon_lines'] as $item){
-            array_push($couponLines,$item->get_data());
-        }
-        $dataOrder['coupon_lines'] = $couponLines;
+        unset($dataOrder['coupon_lines']);
+        unset($dataOrder['meta_data']);
+        unset($dataOrder['line_items']);
+
 
         if ($months > 0) {
             $transaction = $kushki->deferredCharge($token, $amount, $months, $dataOrder);
