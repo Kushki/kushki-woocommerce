@@ -189,7 +189,9 @@ class Kushki_Gateway extends WC_Payment_Gateway_CC
 
         $token = $_POST['kushkiToken'];
         $months = intval($_POST['kushkiDeferred']);
-        $subtotal = round($customer_order->get_total() - $customer_order->get_total_tax(), $decimals);
+        $total_amount = round(floatval($customer_order->get_total()), $decimals);
+        $total_tax_amount = round(floatval($customer_order->get_total_tax()), $decimals);
+        $subtotal = round($total_amount - $total_tax_amount , $decimals);
         $iva = 0;
         $ice = 0;
         $propina = null;
@@ -199,9 +201,9 @@ class Kushki_Gateway extends WC_Payment_Gateway_CC
         $ivaPercent = 0;
 
         foreach ($dataOrder['tax_lines'] as $tax) {
-            $totalTax = floatval($tax->get_tax_total());
+            $totalTax =  round(floatval($tax->get_tax_total()), $decimals);
             if($tax->get_shipping_tax_total()) {
-                $totalTax += floatval($tax->get_shipping_tax_total());
+                $totalTax += round(floatval($tax->get_shipping_tax_total()), $decimals);
             }
             switch ($tax->get_label()) {
                 case $this->tax_iva:
