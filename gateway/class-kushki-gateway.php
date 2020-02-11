@@ -242,7 +242,7 @@ class Kushki_Gateway extends WC_Payment_Gateway_CC
         foreach ( $customer_order->get_items() as  $item_key => $item_values ) {
             $item_data = $item_values->get_data();
             $product_tax = $item_data['subtotal_tax'];
-            if($product_tax != 0){
+            if($product_tax != 0 && $iva != 0){
                 $subtotalIva += $item_data['subtotal'];
             }else{
                 $subtotalIva0 += $item_data['subtotal'];
