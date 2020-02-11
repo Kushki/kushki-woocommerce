@@ -122,7 +122,7 @@ class Kushki_Gateway extends WC_Payment_Gateway_CC
                 'title' => __('Tax Settings', 'kushki-gateway'),
                 'type' => 'title',
                 'description' => __("Set the current defined name for each tax on the Woocommerce Tax settings.<br>" .
-                                     "<strong>NOTE: Keep in blank the taxes unused. </strong>", 'kushki-gateway'),
+                    "<strong>NOTE: Keep in blank the taxes unused. </strong>", 'kushki-gateway'),
             ),
             'tax_iva' => array(
                 'title' => __('IVA', 'kushki-gateway'),
@@ -189,16 +189,12 @@ class Kushki_Gateway extends WC_Payment_Gateway_CC
 
         $token = $_POST['kushkiToken'];
         $months = intval($_POST['kushkiDeferred']);
-        $total_amount = round(floatval($customer_order->get_total()), $decimals);
-        $total_tax_amount = round(floatval($customer_order->get_total_tax()), $decimals);
-        $subtotal = round($total_amount - $total_tax_amount , $decimals);
         $iva = 0;
         $ice = 0;
         $propina = null;
         $tasaAeroportuaria = null;
         $agenciaDeViaje = null;
         $iac = null;
-        $ivaPercent = 0;
 
         foreach ($dataOrder['tax_lines'] as $tax) {
             $totalTax =  round(floatval($tax->get_tax_total()), $decimals);
@@ -242,11 +238,28 @@ class Kushki_Gateway extends WC_Payment_Gateway_CC
 
         $subtotalIva = 0;
         $subtotalIva0 = 0;
-        if($ivaPercent > 0){
-            $subtotalIva = round($iva/$ivaPercent, $decimals);
-        } 
-        $subtotalIva0 = round($subtotal-$subtotalIva, $decimals);
-        
+
+        foreach ( $customer_order->get_items() as  $item_key => $item_values ) {
+            $item_data = $item_values->get_data();
+            $product_tax = $item_data['subtotal_tax'];
+            if($product_tax != 0){
+                $subtotalIva += $item_data['subtotal'];
+            }else{
+                $subtotalIva0 += $item_data['subtotal'];
+            }
+        }
+
+        foreach ($dataOrder['shipping_lines'] as $item_key => $item_values) {
+            $item_data = $item_values->get_data();
+            if($item_data['total_tax'] != 0){
+                $shipping_value =  round(floatval($item_data['total']), $decimals);
+                $subtotalIva += $shipping_value;
+            }
+            else{
+                $subtotalIva0 += round(floatval($item_data['total']), $decimals);
+            }
+        }
+
 
         $iva = round($iva, $decimals);
 
