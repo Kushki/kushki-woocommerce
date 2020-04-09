@@ -270,6 +270,16 @@ class Kushki_Gateway extends WC_Payment_Gateway_CC
             }
         }
 
+        foreach($dataOrder['fee_lines'] as $item_key => $item_values){
+            $item_data = $item_values-> get_data();
+            if($item_data['total_tax'] != 0){
+                $subtotalIva +=  round(floatval($item_data['total']), $decimals);
+            }
+            else{
+                $subtotalIva0 += round(floatval($item_data['total']), $decimals);
+            }
+        }
+
 
         $iva = round($iva, $decimals);
 
