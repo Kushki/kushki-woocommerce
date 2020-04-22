@@ -345,14 +345,17 @@ class Kushki_Gateway extends WC_Payment_Gateway_CC
         } else {
             // Transaction was not succesful
             // Add notice to the cart
+            WC()->session->set( 'reload_checkout', true);
             wc_add_notice("Error " . $transaction->getResponseCode() . ": " . $transaction->getResponseText(), 'error');
             // Add note to the order for your reference
+            WC()->session->set( 'reload_checkout', false);
             return $customer_order->add_order_note("Error " . $transaction->getResponseCode() . ": " . $transaction->getResponseText());
         }
     }
 
     public function validate_fields()
     {
+        WC()->session->set( 'reload_checkout', true);
         return true;
     }
 
