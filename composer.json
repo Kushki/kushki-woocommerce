@@ -10,6 +10,10 @@
         {
             "name": "joseSantacruz",
             "email": "jose@kushkipagos.com"
+        },
+        {
+            "name": "Bryan Lema",
+            "email": "bryan@kushkipagos.com"
         }
     ],
     "minimum-stability": "stable"
