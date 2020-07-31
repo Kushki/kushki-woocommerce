@@ -1,8 +1,5 @@
 <?php
 
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
 /*
 Plugin Name: Kushki - WooCommerce Payment Gateway
 Plugin URI: https://www.kushkipagos.com/
