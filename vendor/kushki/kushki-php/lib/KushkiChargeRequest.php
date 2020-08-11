@@ -18,9 +18,11 @@ class KushkiChargeRequest{
     private $currency;
     private $language = KushkiLanguage::ES;
     private $months;
+    private $contactDetails;
+
 
     function __construct($merchantId, $token, $amount, $months, $metadata = false,
-                         $baseUrl = KushkiEnvironment::PRODUCTION, $currency = KushkiCurrency::USD) {
+                         $baseUrl = KushkiEnvironment::PRODUCTION, $currency = KushkiCurrency::USD, $contactDetails = false) {
         $this->url = $baseUrl;
         $this->token = $token;
         $this->amount = $amount;
@@ -28,6 +30,7 @@ class KushkiChargeRequest{
         $this->merchantId = $merchantId;
         $this->metadata = $metadata;
         $this->currency = $currency;
+        $this->contactDetails = $contactDetails;
     }
 
     public function getUrl() {
@@ -53,6 +56,11 @@ class KushkiChargeRequest{
             $body["months"] = $this->months;
         if($this->metadata!=false){
             $body = array_merge($body, $metadataArray);
+        }
+
+        $contactDetailsArray = array("contactDetails" => $this->contactDetails);
+        if($this->contactDetails!=false){
+            $body = array_merge($body, $contactDetailsArray);
         }
 
         $data = array(
