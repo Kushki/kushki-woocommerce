@@ -275,16 +275,17 @@ class WC_Kushki_Gateway extends WC_Payment_Gateway_CC {
 			array_push( $feeLines, $item->get_data() );
 		}
 		$dataOrder['fee_lines'] = $feeLines;
+        $customer_contact_details = $this->build_contact_details($customer_order);
 
 		unset( $dataOrder['coupon_lines'] );
 		unset( $dataOrder['meta_data'] );
 		unset( $dataOrder['line_items'] );
 
 		if ( $months > 0 ) {
-			$transaction = $kushki->deferredCharge( $token, $amount, $months, $dataOrder );
+			$transaction = $kushki->deferredCharge( $token, $amount, $months, $dataOrder, $customer_contact_details);
 			// $transaction = $kushki->deferredCharge($token, $amount, $months);
 		} else {
-			$transaction = $kushki->charge( $token, $amount, $dataOrder );
+			$transaction = $kushki->charge( $token, $amount, $dataOrder, $customer_contact_details);
 			// $transaction = $kushki->charge($token, $amount);
 		}
 
@@ -313,6 +314,11 @@ class WC_Kushki_Gateway extends WC_Payment_Gateway_CC {
 			return $customer_order->add_order_note( "Error " . $transaction->getResponseCode() . ": " . $transaction->getResponseText() );
 		}
 	}
+
+	public function build_contact_details($customer_order){
+
+        return array("email" => $customer_order->billing_email);
+    }
 
 	public function payment_scripts() {
 
