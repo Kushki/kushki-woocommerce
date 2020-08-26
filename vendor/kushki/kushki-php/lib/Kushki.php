@@ -33,9 +33,9 @@ class Kushki {
      * @throws KushkiException
      */
 
-    public function charge($token, $amount, $metadata = false) {
+    public function charge($token, $amount, $metadata = false, $contactDetails = false) {
         $chargeRequestBuilder = new KushkiChargeRequest($this->merchantId, $token, $amount,$months = 0, $metadata,
-            $this->environment, $this->currency);
+            $this->environment, $this->currency, $contactDetails);
         $request = $chargeRequestBuilder->charge();
         return $request;
     }
@@ -48,9 +48,9 @@ class Kushki {
      * @throws KushkiException
      */
 
-    public function deferredCharge($token, $amount, $months, $metadata = false) {
+    public function deferredCharge($token, $amount, $months, $metadata = false, $contactDetails = false) {
         $chargeRequestBuilder = new KushkiChargeRequest($this->merchantId, $token, $amount, $months, $metadata,
-            $this->environment, $this->currency);
+            $this->environment, $this->currency, $contactDetails);
         $request = $chargeRequestBuilder->charge();
         return $request;
     }
