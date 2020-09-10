@@ -246,6 +246,10 @@ class WC_Kushki_Gateway extends WC_Payment_Gateway_CC {
 		$iva = round( $iva, $decimals );
 
 		$auxTax = $ice;
+
+        $subtotalIva = round($subtotalIva,$decimals);
+        $subtotalIva0 = round($subtotalIva0,$decimals);
+
 		if ( ! is_null( $propina )
 		     || ! is_null( $tasaAeroportuaria )
 		     || ! is_null( $agenciaDeViaje )
@@ -255,6 +259,8 @@ class WC_Kushki_Gateway extends WC_Payment_Gateway_CC {
 				( ! is_null( $agenciaDeViaje ) ? round( $agenciaDeViaje, $decimals ) : 0 ),
 				( ! is_null( $iac ) ? round( $iac, $decimals ) : 0 ) );
 		}
+
+        $auxTax =round($auxTax,$decimals);
 
 		$amount = new Amount( $subtotalIva, $iva, $subtotalIva0, $auxTax );
 
