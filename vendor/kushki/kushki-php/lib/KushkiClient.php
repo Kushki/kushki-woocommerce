@@ -38,6 +38,16 @@ class KushkiClient
                 ->send();
             return new Transaction($responseRaw->content_type, $responseRaw->body, $responseRaw->code);
         }
+        elseif ($method == "GET"){
+            $responseRaw = \Httpful\Request::get($url)
+                ->sendsJson()
+                ->withStrictSSL()
+                ->addHeaders(array(
+                    'private-merchant-id' => $data["private-merchant-id"]
+                ))
+                ->send();
+            return new Transaction($responseRaw->content_type, $responseRaw->body, $responseRaw->code);
+        }
         else
         {
             if(isset($data["body"])){
@@ -98,6 +108,44 @@ class KushkiClient
     function callVoidCharge($url, $data)
     {
         $url = $url . KushkiConstant::CHARGE_API_URL . "/" . $data["ticketNumber"];
+        $method = 'DELETE';
+        $requestVoidCharge = $this->callAPI($method,$url,$data);
+        return $requestVoidCharge;
+    }
+
+    function callCardAsyncStatus($url, $data)
+    {
+        $baseUrl = str_replace('plugins', 'card-async', $url);
+        $urlCardAsync = $baseUrl . KushkiConstant::CARD_ASYNC_STATUS . "/" . $data["token"];
+        $method = 'GET';
+        return $this->callAPI($method,$urlCardAsync,$data);
+    }
+
+    function callTransferStatus($url, $data)
+    {
+        $baseUrl = str_replace('plugins', 'transfer', $url);
+        $urlTransfer = $baseUrl . KushkiConstant::TRANSFER_STATUS . "/" . $data["token"];
+        $method = 'GET';
+        return $this->callAPI($method,$urlTransfer,$data);
+    }
+
+    function callPreAuth($url, $data)
+    {
+        $url = $url . KushkiConstant::PRE_AUTH_URL;
+        $method = 'POST';
+        $requestPreAuth = $this->callAPI($method,$url,$data);
+        return $requestPreAuth;
+    }
+    function callCapture($url, $data)
+    {
+        $url = $url . KushkiConstant::CAPTURE_URL;
+        $method = "POST";
+        $requestCapture = $this->callAPI($method,$url,$data);
+        return $requestCapture;
+    }
+    function callRefund($url, $data)
+    {
+        $url = $url . KushkiConstant::REFUND_API_URL . "/" . $data["ticketNumber"];
         $method = 'DELETE';
         $requestVoidCharge = $this->callAPI($method,$url,$data);
         return $requestVoidCharge;

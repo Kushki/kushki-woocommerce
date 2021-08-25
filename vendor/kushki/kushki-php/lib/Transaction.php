@@ -30,6 +30,14 @@ class Transaction {
         return $this->code === 200 || $this->code === 201 || $this->code === 204;
     }
 
+    public function hasReturnUrl() {
+        return isset($this->body->redirectUrl);
+    }
+
+    public function getReturnUrl() {
+        return $this->body->redirectUrl;
+    }
+
     public function getToken() {
         return $this->body->transaction_token;
     }
@@ -61,6 +69,26 @@ class Transaction {
 
     public function getSubscriptionId(){
         return $this->body->subscriptionId;
+    }
+
+    public function getPdfUrl() {
+        return $this->body->pdfUrl;
+    }
+
+    public function getPin() {
+        return $this->body->pin;
+    }
+
+    public function getTransactionId() {
+        if(isset($this->body->transactionReference))
+            return $this->body->transactionReference;
+        else
+            return $this->body->details->transactionId;
+    }
+    public function getTrazabilityCode(){
+        if ( isset($this->body->trazabilityCode ))
+            return $this->body->trazabilityCode;
+        return "";
     }
 }
 

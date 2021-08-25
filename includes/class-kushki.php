@@ -21,7 +21,6 @@ class Kushki_WC {
 		require_once dirname( dirname( __FILE__ ) ) . '/includes/class-kushki-loader.php';
 		require_once dirname( dirname( __FILE__ ) ) . '/admin/class-kushki-admin.php';
 		require_once dirname( dirname( __FILE__ ) ) . '/vendor/autoload.php';
-		require_once dirname( dirname( __FILE__ ) ) . '/public/class-kushki-public.php';
 
 		$this->loader = new Kushki_Loader();
 
@@ -65,11 +64,6 @@ class Kushki_WC {
 	 * @access   private
 	 */
 	private function define_public_hooks() {
-
-		$plugin_public = new Kushki_Public( $this->get_plugin_name(), $this->get_version() );
-
-		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
-		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 
 	}
 

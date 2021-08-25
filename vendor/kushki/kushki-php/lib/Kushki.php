@@ -33,26 +33,21 @@ class Kushki {
      * @throws KushkiException
      */
 
-    public function charge($token, $amount, $metadata = false, $contactDetails = false) {
-        $chargeRequestBuilder = new KushkiChargeRequest($this->merchantId, $token, $amount,$months = 0, $metadata,
+    public function charge( $paymentMethod, $token, $orderId, $amount, $deferred, $storeDomain, $siftFields, $metadata = false, $contactDetails = false ) {
+        $chargeRequestBuilder = new KushkiChargeRequest($this->merchantId, $paymentMethod, $token, $orderId, $amount, $deferred, $storeDomain, $months = 0, $siftFields, $metadata,
             $this->environment, $this->currency, $contactDetails);
         $request = $chargeRequestBuilder->charge();
         return $request;
     }
 
-    /**
-     * @param $token
-     * @param $amount
-     * @param $months
-     * @return Transaction
-     * @throws KushkiException
-     */
+    public function getCardAsyncTransaction( $token ) {
+        $cardAsyncTrxBuilder = new KushkiCardAsyncTrxRequest( $this->merchantId, $token, $this->environment );
+        return $cardAsyncTrxBuilder->getTransaction();
+    }
 
-    public function deferredCharge($token, $amount, $months, $metadata = false, $contactDetails = false) {
-        $chargeRequestBuilder = new KushkiChargeRequest($this->merchantId, $token, $amount, $months, $metadata,
-            $this->environment, $this->currency, $contactDetails);
-        $request = $chargeRequestBuilder->charge();
-        return $request;
+    public function getTransferTransaction( $token ) {
+        $transferTrxBuilder = new KushkiTransferTrxRequest( $this->merchantId, $token, $this->environment );
+        return $transferTrxBuilder->getTransaction();
     }
 
     /**
@@ -63,6 +58,16 @@ class Kushki {
     public function voidCharge($ticketNumber, $amount = false){
         $voidRequestBuilder = new KushkiVoidRequest($this->merchantId, $ticketNumber, $amount, $this->environment);
         $request = $voidRequestBuilder->voidCharge();
+        return $request;
+    }
+    /**
+     * @param $ticketNumber
+     * @return Transaction
+     * @throws KushkiException
+     */
+    public function refund($ticketNumber, $amount = false){
+        $voidRequestBuilder = new KushkiRefundRequest($this->merchantId, $ticketNumber, $amount, $this->environment);
+        $request = $voidRequestBuilder->refund();
         return $request;
     }
 
@@ -93,7 +98,7 @@ class Kushki {
      */
     public function updateSubscription($subscriptionId, $body){
         $subscriptionRequest = new KushkiSubscriptionUpdateRequest($this->merchantId, $subscriptionId, $body,
-                                                                   $this->environment);
+            $this->environment);
         $updateSubscription = $subscriptionRequest->updateSubscription();
         return $updateSubscription;
     }
@@ -108,6 +113,26 @@ class Kushki {
             $this->environment);
         $chargeSubscription = $subscriptionRequest->chargeSubscription();
         return $chargeSubscription;
+    }
+
+    /**
+     * @param $token
+     * @param $orderId
+     * @param $amount
+     * @param bool $metadata
+     * @return Transaction
+     * @throws KushkiException
+     */
+    public function preAuth($token, $orderId, $amount, $siftFields, $metadata = false){
+        $preAuthRequestBuilder = new KushkiPreAuthRequest($this->merchantId, $token, $orderId, $amount, $siftFields, $metadata,
+            $this->environment, $this->currency);
+        $request = $preAuthRequestBuilder->preAuth();
+        return $request;
+    }
+    public function capture($orderId, $ticketNumber) {
+        $captureRequestBuilder = new KushkiCaptureRequest($this->merchantId, $orderId, $ticketNumber);
+        $request = $captureRequestBuilder->capture();
+        return $request;
     }
 
     public function getMerchantId() {
