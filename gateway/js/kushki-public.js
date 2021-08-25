@@ -12,14 +12,14 @@
      * This enables you to define handlers, for when the DOM is ready:
      *
      * $(function() {
-	 *
-	 * });
+     *
+     * });
      *
      * When the window is loaded:
      *
      * $( window ).load(function() {
-	 *
-	 * });
+     *
+     * });
      *
      * ...and/or other possibilities.
      *
@@ -31,16 +31,16 @@
 
 })(jQuery);
 
-var KushkiCheckout, bind = function (e, t) {
+var KushkiKFormCheckout, bind = function (e, t) {
     return function () {
         return e.apply(t, arguments)
     }
 };
-KushkiCheckout = function () {
+KushkiKFormCheckout = function () {
     function Kushki(e, t) {
         this.params = null != e ? e : {};
         this.onReceiveMessage = bind(this.onReceiveMessage, this);
-        this.url = t || "https://cdn-uat.kushkipagos.com/index.html";
+        this.url = t || "https://kajita-uat.kushkipagos.com/"; // uat
         this.id = +new Date;
         this.iframeHeightOffset = 10;
         this.element = document.getElementById(this.params.form);
@@ -52,7 +52,7 @@ KushkiCheckout = function () {
 
     Kushki.prototype.loadIframe = function () {
         var e, t, i, r;
-        i = this.url + ("?merchant_id=" + this.params.merchant_id) + ("&is_subscription=" + this.params.is_subscription)  + ("&amount=" + this.params.amount) + ("&language=" + this.params.language) + ("&currency=" + this.params.currency);
+        i = this.url + ("?kformId=" + this.params.kformId) + ("&publicMerchantId=" + this.params.publicMerchantId) + ("&amount=%7B\"subtotalIva\"%3A" + this.params.subtotalIva) + ("%2C\"subtotalIva0\"%3A" + this.params.subtotalIva0) + ("%2C\"iva\"%3A" + this.params.iva) + ("%2C\"ice\"%3A" + this.params.ice + "%7D") + ("&currency=" + this.params.currency) + ("&callbackUrl=" + this.params.callbackUrl) + ("&regional=" + this.params.regional);
         e = {
             src: i,
             width: "100%",
@@ -88,14 +88,18 @@ KushkiCheckout = function () {
     };
 
     Kushki.prototype.setParameters = function (e) {
-        var t, i, r, s, n;
+        var t, i, r, s, p, g;
         s = e.split(",");
-        n = s[0];
-        t = s[1];
-        r = this.createInput(n, "kushkiToken");
-        i = this.createInput(t, "kushkiDeferred");
+        r = this.createInput(s[0], "kushkiToken");
+        i = this.createInput(s[1], "kushkiDeferred");
+        p = this.createInput(s[2], "kushkiPaymentMethod");
+        t = this.createInput(s[3], "kushkiDeferredType");
+        g = this.createInput(s[4], "kushkiMonthsOfGrace");
         this.form[0].appendChild(r);
         this.form[0].appendChild(i);
+        this.form[0].appendChild(p);
+        this.form[0].appendChild(t);
+        this.form[0].appendChild(g);
         this.form.submit();
         return s;
     };
@@ -120,5 +124,5 @@ KushkiCheckout = function () {
     return Kushki;
 }();
 
-// KushkiVersion 201
+// KushkiVersion
 

@@ -37,8 +37,9 @@ class Amount {
                            "iva" => $validatedIva);
         if($validatedIce > 0) {
             $arrayHash["ice"] = $validatedIce;
+        } else {
+            $arrayHash["ice"] = 0;
         }
-        $arrayHash["Total_amount"] = $validatedTotal;
         if(count($this->extraTaxes->toHashArray()) > 0) {
             $arrayHash["extraTaxes"] = $this->extraTaxes->toHashArray();
         }

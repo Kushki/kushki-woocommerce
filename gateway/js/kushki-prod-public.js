@@ -31,16 +31,16 @@
 
 })(jQuery);
 
-var KushkiCheckout, bind = function (e, t) {
+var KushkiKFormCheckout, bind = function (e, t) {
     return function () {
         return e.apply(t, arguments)
     }
 };
-KushkiCheckout = function () {
+KushkiKFormCheckout = function () {
     function Kushki(e, t) {
         this.params = null != e ? e : {};
         this.onReceiveMessage = bind(this.onReceiveMessage, this);
-        this.url = t || "https://cdn.kushkipagos.com/index.html";
+        this.url = t || "https://kajita.kushkipagos.com/"; // primary
         this.id = +new Date;
         this.iframeHeightOffset = 10;
         this.element = document.getElementById(this.params.form);
@@ -52,7 +52,7 @@ KushkiCheckout = function () {
 
     Kushki.prototype.loadIframe = function () {
         var e, t, i, r;
-        i = this.url + ("?merchant_id=" + this.params.merchant_id) + ("&is_subscription=" + this.params.is_subscription)  + ("&amount=" + this.params.amount) + ("&language=" + this.params.language) + ("&currency=" + this.params.currency);
+        i = this.url + ("?kformId=" + this.params.kformId) + ("&publicMerchantId=" + this.params.publicMerchantId) + ("&amount=%7B\"subtotalIva\"%3A" + this.params.subtotalIva) + ("%2C\"subtotalIva0\"%3A" + this.params.subtotalIva0) + ("%2C\"iva\"%3A" + this.params.iva) + ("%2C\"ice\"%3A" + this.params.ice + "%7D") + ("&currency=" + this.params.currency) + ("&callbackUrl=" + this.params.callbackUrl) + ("&regional=" + this.params.regional);
         e = {
             src: i,
             width: "100%",
