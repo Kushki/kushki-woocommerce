@@ -88,14 +88,18 @@ KushkiKFormCheckout = function () {
     };
 
     Kushki.prototype.setParameters = function (e) {
-        var t, i, r, s, n;
+        var t, i, r, s, p, g;
         s = e.split(",");
-        n = s[0];
-        t = s[1];
-        r = this.createInput(n, "kushkiToken");
-        i = this.createInput(t, "kushkiDeferred");
+        r = this.createInput(s[0], "kushkiToken");
+        i = this.createInput(s[1], "kushkiDeferred");
+        p = this.createInput(s[2], "kushkiPaymentMethod");
+        t = this.createInput(s[3], "kushkiDeferredType");
+        g = this.createInput(s[4], "kushkiMonthsOfGrace");
         this.form[0].appendChild(r);
         this.form[0].appendChild(i);
+        this.form[0].appendChild(p);
+        this.form[0].appendChild(t);
+        this.form[0].appendChild(g);
         this.form.submit();
         return s;
     };
