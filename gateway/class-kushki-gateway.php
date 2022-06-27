@@ -163,6 +163,7 @@ class WC_Kushki_Gateway extends WC_Payment_Gateway_CC {
 
         $kushki = new Kushki( $merchantId, $language, $currency, $environment );
 
+        $hasToken          = isset($_POST['kushkiToken']) && $_POST['kushkiToken'] !== "";
         $token             = $_POST['kushkiToken'];
         $months            = intval( $_POST['kushkiDeferred'] );
         $monthsOfGrace     = intval( $_POST['kushkiMonthsOfGrace'] );
@@ -173,32 +174,93 @@ class WC_Kushki_Gateway extends WC_Payment_Gateway_CC {
             "monthsOfGrace" => $monthsOfGrace,
             "deferredType" => $deferredType
         );
-
-
         $amount = $this->build_amount( $dataOrder, $customer_order, $decimals );
         $customer_contact_details = $this->build_contact_details( $customer_order );
 		$metadata = $this->build_metadata( $dataOrder, $order_id );
 		$storeDomain = $this->getDomainUrl();
 		$siftFields = $this->map_charge_sift($order_id);
 
-		if ( $paymentMethod == KushkiConstant::PRE_AUTH_PAYMENT_METHOD ) {
-            $transaction = $kushki->preAuth( $token, $order_id, $amount, $siftFields, $metadata );
-        } else {
-            $transaction = $kushki->charge( $paymentMethod, $token, $order_id, $amount, $deferred, $storeDomain, $siftFields, $metadata, $customer_contact_details );
-        }
-        if ( $transaction->isSuccessful() ) {
-            $transactionId = $transaction->getTransactionId();
-            switch ( $paymentMethod ) {
-                case KushkiConstant::PRE_AUTH_PAYMENT_METHOD:
-                    $customer_order->set_transaction_id($transactionId);
+        if($hasToken){
+            if ( $paymentMethod == KushkiConstant::PRE_AUTH_PAYMENT_METHOD ) {
+                $transaction = $kushki->preAuth( $token, $order_id, $amount, $siftFields, $metadata );
+            } else {
+                $transaction = $kushki->charge( $paymentMethod, $token, $order_id, $amount, $deferred, $storeDomain, $siftFields, $metadata, $customer_contact_details );
+            }
+            if ( $transaction->isSuccessful() ) {
+                $transactionId = $transaction->getTransactionId();
+                switch ( $paymentMethod ) {
+                    case KushkiConstant::PRE_AUTH_PAYMENT_METHOD:
+                        $customer_order->set_transaction_id($transactionId);
 
-                    if ( $transaction->isSuccessful() ) {
-                        $customer_order->add_order_note( __( 'Kushki payment processing.', 'kushki-gateway' ) . ' Ticket preauthorization: ' . $transaction->getTicketNumber() );
-                        $customer_order->add_meta_data("_kushki_ticketNumber", $transaction->getTicketNumber());
-                        $customer_order->add_meta_data("_kushki_preauth", true);
-                        $customer_order->add_meta_data("_kushki_capture_call", 0);
+                        if ( $transaction->isSuccessful() ) {
+                            $customer_order->add_order_note( __( 'Kushki payment processing.', 'kushki-gateway' ) . ' Ticket preauthorization: ' . $transaction->getTicketNumber() );
+                            $customer_order->add_meta_data("_kushki_ticketNumber", $transaction->getTicketNumber());
+                            $customer_order->add_meta_data("_kushki_preauth", true);
+                            $customer_order->add_meta_data("_kushki_capture_call", 0);
+                            $customer_order->save_meta_data();
+                            apply_filters( 'woocommerce_payment_complete_order_status', $customer_order->update_status( KushkiConstant::ORDER_PROCESSING ) );
+                            // Empty the cart (Very important step)
+                            wc_empty_cart();
+                            // Redirect to thank you page
+                            return array(
+                                'result'   => 'success',
+                                'redirect' => $this->get_return_url( $customer_order ),
+                            );
+                        } else {
+                            apply_filters( 'woocommerce_payment_complete_order_status', $customer_order->update_status( KushkiConstant::ORDER_FAILED ) );
+                            // Add notice to the cart
+                            WC()->session->set( 'reload_checkout', true );
+                            wc_add_notice( $transaction->getResponseText(), 'error' );
+                            // Add note to the order for your reference
+                            WC()->session->set( 'reload_checkout', false );
+                            return $customer_order->add_order_note( __( 'Kushki preauth failed. ', 'kushki-gateway' ) . $transaction->getResponseText() );
+                        }
+
+                    case KushkiConstant::CARD_ASYNC_PAYMENT_METHOD:
+                        $customer_order->set_transaction_id($transactionId);
+                        apply_filters( 'woocommerce_payment_complete_order_status', $customer_order->update_status( KushkiConstant::ORDER_PROCESSING ) );
+                        $customer_order->add_order_note(__('Kushki payment on hold, ', 'kushki-gateway') . 'with debit card.');
+
+                        return array(
+                            'result' => 'success',
+                            'redirect' => $transaction->getReturnUrl()
+                        );
+
+                    case KushkiConstant::CASH_PAYMENT_METHOD:
+                        $customer_order->set_transaction_id($transactionId);
+                        apply_filters( 'woocommerce_payment_complete_order_status', $customer_order->update_status( KushkiConstant::ORDER_PROCESSING ) );
+                        $customer_order->add_order_note( __( 'Kushki payment on hold,', 'kushki-gateway' ) . ' with cash. Ticket: ' . $transaction->getTicketNumber());
+                        $customer_order->add_order_note( __( 'Cash order: ', 'kushki-gateway' ) . $transaction->getPdfUrl() );
+                        $customer_order->add_order_note(__( 'Pin: ', 'kushki-gateway' ) . $transaction->getPin());
+                        $customer_order->add_meta_data( "_pdfUrl", $transaction->getPdfUrl(), true );
+                        $customer_order->add_meta_data( "_pin", $transaction->getPin(), true );
+                        $customer_order->save_meta_data();
+                        wc_empty_cart();
+                        // Redirect to thank you page
+                        return array(
+                            'result' => 'success',
+                            'redirect' => $this->get_return_url( $customer_order )
+                        );
+                    case KushkiConstant::TRANSFER_PAYMENT_METHOD:
+                        $customer_order->set_transaction_id($transactionId);
+                        $customer_order->add_meta_data("_trazabilityCode", $transaction->getTrazabilityCode());
                         $customer_order->save_meta_data();
                         apply_filters( 'woocommerce_payment_complete_order_status', $customer_order->update_status( KushkiConstant::ORDER_PROCESSING ) );
+                        // Empty the cart (Very important step)
+                        wc_empty_cart();
+                        // Redirect to thank you page
+                        return array(
+                            'result' => 'success',
+                            'redirect' => $transaction->getReturnUrl()
+                        );
+
+                    default: // CARD
+                        $customer_order->add_order_note(__('Kushki payment completed.', 'kushki-gateway') . ' with credit card. Ticket: ' . $transaction->getTicketNumber());
+                        $customer_order->add_meta_data("_kushki_ticketNumber", $transaction->getTicketNumber());
+                        $customer_order->add_meta_data("_kushki_refund", true);
+                        $customer_order->save_meta_data();
+                        $customer_order->set_transaction_id($transactionId);
+                        apply_filters('woocommerce_payment_complete_order_status', $customer_order->update_status(KushkiConstant::ORDER_COMPLETED));
                         // Empty the cart (Very important step)
                         wc_empty_cart();
                         // Redirect to thank you page
@@ -206,78 +268,24 @@ class WC_Kushki_Gateway extends WC_Payment_Gateway_CC {
                             'result'   => 'success',
                             'redirect' => $this->get_return_url( $customer_order ),
                         );
-                    } else {
-                        apply_filters( 'woocommerce_payment_complete_order_status', $customer_order->update_status( KushkiConstant::ORDER_FAILED ) );
-                        // Add notice to the cart
-                        WC()->session->set( 'reload_checkout', true );
-                        wc_add_notice( $transaction->getResponseText(), 'error' );
-                        // Add note to the order for your reference
-                        WC()->session->set( 'reload_checkout', false );
-                        return $customer_order->add_order_note( __( 'Kushki preauth failed. ', 'kushki-gateway' ) . $transaction->getResponseText() );
-                    }
-
-                case KushkiConstant::CARD_ASYNC_PAYMENT_METHOD:
-                    $customer_order->set_transaction_id($transactionId);
-                    apply_filters( 'woocommerce_payment_complete_order_status', $customer_order->update_status( KushkiConstant::ORDER_PROCESSING ) );
-                    $customer_order->add_order_note(__('Kushki payment on hold, ', 'kushki-gateway') . 'with debit card.');
-
-                    return array(
-                        'result' => 'success',
-                        'redirect' => $transaction->getReturnUrl()
-                    );
-
-                case KushkiConstant::CASH_PAYMENT_METHOD:
-                    $customer_order->set_transaction_id($transactionId);
-                    apply_filters( 'woocommerce_payment_complete_order_status', $customer_order->update_status( KushkiConstant::ORDER_PROCESSING ) );
-                    $customer_order->add_order_note( __( 'Kushki payment on hold,', 'kushki-gateway' ) . ' with cash. Ticket: ' . $transaction->getTicketNumber());
-                    $customer_order->add_order_note( __( 'Cash order: ', 'kushki-gateway' ) . $transaction->getPdfUrl() );
-                    $customer_order->add_order_note(__( 'Pin: ', 'kushki-gateway' ) . $transaction->getPin());
-                    $customer_order->add_meta_data( "_pdfUrl", $transaction->getPdfUrl(), true );
-                    $customer_order->add_meta_data( "_pin", $transaction->getPin(), true );
-                    $customer_order->save_meta_data();
-                    wc_empty_cart();
-                    // Redirect to thank you page
-                    return array(
-                        'result' => 'success',
-                        'redirect' => $this->get_return_url( $customer_order )
-                    );
-                case KushkiConstant::TRANSFER_PAYMENT_METHOD:
-                    $customer_order->set_transaction_id($transactionId);
-                    $customer_order->add_meta_data("_trazabilityCode", $transaction->getTrazabilityCode());
-                    $customer_order->save_meta_data();
-                    apply_filters( 'woocommerce_payment_complete_order_status', $customer_order->update_status( KushkiConstant::ORDER_PROCESSING ) );
-                    // Empty the cart (Very important step)
-                    wc_empty_cart();
-                    // Redirect to thank you page
-                    return array(
-                        'result' => 'success',
-                        'redirect' => $transaction->getReturnUrl()
-                    );
-
-                default: // CARD
-                    $customer_order->add_order_note(__('Kushki payment completed.', 'kushki-gateway') . ' with credit card. Ticket: ' . $transaction->getTicketNumber());
-                    $customer_order->add_meta_data("_kushki_ticketNumber", $transaction->getTicketNumber());
-                    $customer_order->add_meta_data("_kushki_refund", true);
-                    $customer_order->save_meta_data();
-                    $customer_order->set_transaction_id($transactionId);
-                    apply_filters('woocommerce_payment_complete_order_status', $customer_order->update_status(KushkiConstant::ORDER_COMPLETED));
-                    // Empty the cart (Very important step)
-                    wc_empty_cart();
-                    // Redirect to thank you page
-                    return array(
-                        'result'   => 'success',
-                        'redirect' => $this->get_return_url( $customer_order ),
-                    );
+                }
+            } else {
+                // Transaction was not succesful
+                // Add notice to the cart
+                WC()->session->set( 'reload_checkout', true );
+                wc_add_notice( "Error " . $transaction->getResponseCode() . ": " . $transaction->getResponseText(), 'error' );
+                // Add note to the order for your reference
+                WC()->session->set( 'reload_checkout', false );
+                apply_filters('woocommerce_payment_complete_order_status', $customer_order->update_status(KushkiConstant::ORDER_FAILED));
+                return $customer_order->add_order_note( __( 'Kushki ' . $paymentMethod . ' payment failed. ', 'kushki-gateway' ) . $transaction->getResponseText() );
             }
         } else {
-            // Transaction was not succesful
             // Add notice to the cart
             WC()->session->set( 'reload_checkout', true );
-            wc_add_notice( "Error " . $transaction->getResponseCode() . ": " . $transaction->getResponseText(), 'error' );
+            wc_add_notice( 'Error al procesar el pago', 'error' );
             // Add note to the order for your reference
             WC()->session->set( 'reload_checkout', false );
-            apply_filters('woocommerce_payment_complete_order_status', $customer_order->update_status(KushkiConstant::ORDER_FAILED));
-            return $customer_order->add_order_note( __( 'Kushki ' . $paymentMethod . ' payment failed. ', 'kushki-gateway' ) . $transaction->getResponseText() );
+            return $customer_order->add_order_note( __( 'Kushki token failed. ', 'kushki-gateway' ) . 'Error al procesar el pago');
         }
     }
 
@@ -840,7 +848,6 @@ class WC_Kushki_Gateway extends WC_Payment_Gateway_CC {
         }
 
     }
-
 
 }
 
