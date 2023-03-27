@@ -4,7 +4,7 @@
 Plugin Name: Kushki - WooCommerce Payment Gateway
 Plugin URI: https://www.kushkipagos.com/
 Description: Kushki payment gateway for WooCommerce.
-Version: 3.0.2
+Version: 3.0.3
 Author: Kushki
 Author URI: http://URI_Of_The_Plugin_Author
 License: A "Slug" license name e.g. GPL2
@@ -12,7 +12,6 @@ License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
 Text Domain:       woocommerce-gateway-kushki
 Domain Path:       /languages
 */
-
 
 // If this file is called directly, abort.
 if ( ! defined( 'WPINC' ) ) {
@@ -41,7 +40,3 @@ function run_kushki() {
 
 }
 run_kushki();
-
-
-
-
