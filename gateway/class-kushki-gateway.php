@@ -12,6 +12,7 @@ class WC_Kushki_Gateway extends WC_Payment_Gateway_CC {
     private $environment;
     private $private_id;
     private $public_id;
+    private $platform_id;
     private $tax_iva;
     private $tax_ice;
     private $tax_propina;
@@ -26,6 +27,7 @@ class WC_Kushki_Gateway extends WC_Payment_Gateway_CC {
 		$this->title              = __( "Kushki", 'kushki-gateway' );
 		$this->icon               = apply_filters( 'woocommerce_kushki_icon', plugins_url( '../assets/kushki.png', __FILE__ ) );
 		$this->has_fields         = true;
+        $this->platform_id        = "KP011"; // WOOCOMMERCE
 		$this->init_form_fields();
 		$this->init_settings();
         $this->supports = array(
@@ -591,7 +593,10 @@ class WC_Kushki_Gateway extends WC_Payment_Gateway_CC {
         		                "ice": \'' . $amount['ice'] . '\',
         		                "callbackUrl": \'' . $callback_url . '\',
         		                "currency": \'' . $currency . '\',
-        		                "regional": false
+        		                "regional": false,
+                                "kushkiInfo": {
+                                    platformId: \'' . $this->platform_id . '\',
+                                }
         		    });
         		 </script>';
     }

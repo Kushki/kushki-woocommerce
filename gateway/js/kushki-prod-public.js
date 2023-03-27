@@ -52,7 +52,16 @@ KushkiKFormCheckout = function () {
 
     Kushki.prototype.loadIframe = function () {
         var e, t, i, r;
-        i = this.url + ("?kformId=" + this.params.kformId) + ("&publicMerchantId=" + this.params.publicMerchantId) + ("&amount=%7B\"subtotalIva\"%3A" + this.params.subtotalIva) + ("%2C\"subtotalIva0\"%3A" + this.params.subtotalIva0) + ("%2C\"iva\"%3A" + this.params.iva) + ("%2C\"ice\"%3A" + this.params.ice + "%7D") + ("&currency=" + this.params.currency) + ("&callbackUrl=" + this.params.callbackUrl) + ("&regional=" + this.params.regional);
+        
+        i = new URL(this.url);
+        i.searchParams.append("kformId",this.params.kformId)
+        i.searchParams.append("publicMerchantId",this.params.publicMerchantId)
+        i.searchParams.append("amount",`{"subtotalIva":${this.params.subtotalIva},"iva":${this.params.iva},"subtotalIva0":${this.params.subtotalIva0}, "ice":${this.params.ice}}`)
+        i.searchParams.append("currency",this.params.currency)
+        i.searchParams.append("callbackUrl",this.params.callbackUrl)
+        i.searchParams.append("regional",this.params.regional)
+        i.searchParams.append("kushkiInfo",`{"platformId":"${this.params.kushkiInfo.platformId}"}`)
+
         e = {
             src: i,
             width: "100%",
